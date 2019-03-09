@@ -12,8 +12,15 @@ public class RestModule {
 
     @Provides
     @Singleton
-    EveLoginOAuthRestInterface provideEveLoginOAuthService() {
+    EveLoginOAuthRestInterface provideEveLoginOAuthRestInterface() {
         Retrofit retrofit = new Retrofit.Builder().baseUrl("https://login.eveonline.com/").addConverterFactory(GsonConverterFactory.create()).build();
         return retrofit.create(EveLoginOAuthRestInterface.class);
+    }
+
+    @Provides
+    @Singleton
+    CharacterLocationCRESTInterface provideCharacterLocationCRESTInterface() {
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://crest-tq.eveonline.com/").addConverterFactory(GsonConverterFactory.create()).build();
+        return retrofit.create(CharacterLocationCRESTInterface.class);
     }
 }

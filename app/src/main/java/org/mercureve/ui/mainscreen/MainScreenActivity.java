@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import org.mercureve.ApplicationConstants;
 import org.mercureve.R;
+import org.mercureve.domain.AuthorizedCharacter;
+import org.mercureve.domain.Location;
 import org.mercureve.exception.AuthTokenExpiredException;
 import org.mercureve.util.InjectorUtils;
 import org.mercureve.util.SessionContext;
@@ -35,6 +37,8 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenC
 
     @Inject
     MainScreenController controller;
+
+    private AuthorizedCharacter character;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +62,14 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenC
             StrictMode.setThreadPolicy(policy);
             Uri uri = intent.getData();
             controller.authenticate(uri.getQueryParameter("code"));
-            try {
-                textView.setText(SessionContext.getEveOauthToken().toString());
-            } catch (AuthTokenExpiredException e) {
-                e.printStackTrace();
-            }
+            character = controller.getCharacter();
+            textView.setText(character.toString());
         }
+    }
+
+    @OnClick(R.id.fab)
+    void onFabClick(View view) {
+        Location location = controller.getLocation(character.getCharacterId().toString());
+        textView.setText(location.toString());
     }
 }
