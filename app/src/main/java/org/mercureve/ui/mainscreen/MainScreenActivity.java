@@ -14,7 +14,9 @@ import android.widget.TextView;
 
 import org.mercureve.ApplicationConstants;
 import org.mercureve.R;
+import org.mercureve.exception.AuthTokenExpiredException;
 import org.mercureve.util.InjectorUtils;
+import org.mercureve.util.SessionContext;
 
 import javax.inject.Inject;
 
@@ -45,18 +47,22 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenC
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
+
+        if (Intent.ACTION_MAIN.equals(intent.getAction())) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(ApplicationConstants.EVE_LOGIN_AUTH_CODE_URL));
+            startActivity(browserIntent);
+        }
+
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
             Uri uri = intent.getData();
-            String code = controller.getAuthorizationString(uri.getQueryParameter("code"));
-            textView.setText(code);
+            controller.authenticate(uri.getQueryParameter("code"));
+            try {
+                textView.setText(SessionContext.getEveOauthToken().toString());
+            } catch (AuthTokenExpiredException e) {
+                e.printStackTrace();
+            }
         }
-    }
-
-    @OnClick(R.id.fab)
-    void onFabClick(View view) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(ApplicationConstants.EVE_LOGIN_AUTH_CODE_URL));
-        startActivity(browserIntent);
     }
 }

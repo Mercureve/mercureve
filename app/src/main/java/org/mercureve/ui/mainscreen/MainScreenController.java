@@ -7,5 +7,5 @@ public interface MainScreenController {
     }
 
     void setDisplay(Display display);
-    String getAuthorizationString(String authCode);
+    void authenticate(String authCode);
 }
